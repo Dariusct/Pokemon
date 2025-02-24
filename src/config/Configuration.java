@@ -1,10 +1,19 @@
 package config;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class Configuration {
 
-    public void parseConfigFile(String configFile) {
+    private final List<MonsterBaseValues> monsterBaseValues = new ArrayList<MonsterBaseValues>();
+    private final List<Action> actions = new ArrayList<>();
 
+    public void clearConfig() {
+        monsterBaseValues.clear();
+        actions.clear();
+    }
+
+    public void addAction(Action action) {
+        actions.add(action);
     }
 }
