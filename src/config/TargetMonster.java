@@ -1,6 +1,6 @@
 package config;
 
-public enum TargetType {
+public enum TargetMonster {
     USER,
     TARGET
 }

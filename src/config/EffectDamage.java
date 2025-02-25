@@ -4,13 +4,13 @@ import Combat.CombatMonster;
 
 public class EffectDamage extends Effect {
 
-    private final TargetType targetType;
+    private final TargetMonster targetMonster;
     private final int value;
     private final ValueType valueType;
 
-    public EffectDamage(int hitRate, int repetitionCount, TargetType targetType, int value, ValueType valueType) {
+    public EffectDamage(int repetitionCount, TargetMonster targetMonster, ValueType valueType, int value, int hitRate) {
         super(hitRate, repetitionCount);
-        this.targetType = targetType;
+        this.targetMonster = targetMonster;
         this.value = value;
         this.valueType = valueType;
     }
