@@ -1,11 +1,9 @@
-package config;
-
-import Combat.CombatMonster;
+package Combat;
 
 public class EffectStatusConditionWet extends Effect {
 
-    public EffectStatusConditionWet(int hitRate, int repetitionCount) {
-        super(hitRate, repetitionCount);
+    public EffectStatusConditionWet(int hitRate) {
+        super(hitRate);
     }
 
     @Override

@@ -1,11 +1,10 @@
-package config;
+package Combat;
 
-import java.util.HashMap;
 import java.util.Map;
 
 public class MonsterBaseValues {
 
-    public final Map<String, Action> actions = new HashMap<String, Action>();
+    public final Map<String, Action> actions;
 
     private final String name;
     private final Element element;
@@ -17,7 +16,7 @@ public class MonsterBaseValues {
     private final double prc;
 
     public MonsterBaseValues(String name, Element element, double maxHealth, double atk, double def,
-                             double spd) {
+                             double spd, Map<String, Action> actions) {
         this.name = name;
         this.element = element;
         this.maxHealth = maxHealth;
@@ -26,6 +25,7 @@ public class MonsterBaseValues {
         this.spd = spd;
         this.agl = 1;
         this.prc = 1;
+        this.actions = actions;
     }
 
     public String getName() {

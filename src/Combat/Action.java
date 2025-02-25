@@ -1,7 +1,6 @@
-package config;
+package Combat;
 
 import java.util.List;
-import Combat.CombatMonster;
 
 public class Action {
 

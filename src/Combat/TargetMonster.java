@@ -1,4 +1,4 @@
-package config;
+package Combat;
 
 public enum TargetMonster {
     USER,

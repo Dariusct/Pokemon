@@ -1,5 +1,8 @@
 package config;
 
+import Combat.Action;
+import Combat.MonsterBaseValues;
+
 import java.util.ArrayList;
 import java.util.List;
 

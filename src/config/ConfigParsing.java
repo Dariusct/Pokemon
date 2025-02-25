@@ -1,7 +1,19 @@
 package config;
 
+import Combat.Action;
+import Combat.Effect;
+import Combat.EffectContinue;
+import Combat.EffectDamage;
+import Combat.EffectHeal;
+import Combat.EffectInflictStatChange;
+import Combat.EffectProtectStat;
+import Combat.Element;
+import Combat.Stat;
+import Combat.ProtectTarget;
+import Combat.TargetMonster;
+import Combat.ValueType;
+
 import java.io.IOException;
-import java.sql.SQLOutput;
 import java.util.ArrayList;
 import java.util.List;
 import java.nio.file.Files;
@@ -11,9 +23,9 @@ import java.nio.file.Path;
 
 public class ConfigParsing {
 
-    private static final int BASE_REPEAT_COUNT = 1;
     private static final String MULTIPLE_SPACES_REGEX = "\\s+";
-    private static final String STRING_LOWERCASE_ACTION = "action";
+    private static final String STRING_MONSTER_DECLARATION = "monster";
+    private static final String STRING_ACTION_DECLARATION = "action";
     private static final String STRING_LOWERCASE_END_ACTION = "end action";
     private static final String STRING_LOWERCASE_DAMAGE = "damage";
     private static final String STRING_INFLICT_STAT_CHANGE = "inflictStatChange";
@@ -26,6 +38,7 @@ public class ConfigParsing {
     private static final String STRING_LOWERCASE_REL = "rel";
     private static final String STRING_LOWERCASE_ABS = "abs";
     private static final String STRING_LOWERCASE_STATS = "stats";
+    private static final String STRING_LOWERCASE_END_REPEAT = "end repeat";
 
     private final List<String> nonEmptyConfigFileLines = new ArrayList<>();
     private final Configuration config = new Configuration();
@@ -58,8 +71,11 @@ public class ConfigParsing {
         int currentIndex = 0;
 
         while(!configurationIsDone) {
-            if(this.nonEmptyConfigFileLines.get(currentIndex).split(MULTIPLE_SPACES_REGEX)[0].equals(STRING_LOWERCASE_ACTION)) {
+            if (this.nonEmptyConfigFileLines.get(currentIndex).split(MULTIPLE_SPACES_REGEX)[0].equals(STRING_ACTION_DECLARATION)) {
                 currentIndex = addNewAction(currentIndex);
+            } else if (this.nonEmptyConfigFileLines.get(currentIndex).split(MULTIPLE_SPACES_REGEX)[0].equals(STRING_MONSTER_DECLARATION)) {
+                addNewMonsterBaseValues(currentIndex);
+                currentIndex += 1;
             }
 
             if(currentIndex >= this.nonEmptyConfigFileLines.size()) {
@@ -68,8 +84,12 @@ public class ConfigParsing {
         }
     }
 
+    public void addNewMonsterBaseValues(int monsterConfigIndex) {
+
+    }
+
     public int addNewAction(int actionStartIndex) {
-        List<Effect> tempEffects = new ArrayList<>();
+        List<Effect> actionEffects = new ArrayList<>();
 
 
         String actionName = this.nonEmptyConfigFileLines.get(actionStartIndex).split(MULTIPLE_SPACES_REGEX)[0];
@@ -78,38 +98,42 @@ public class ConfigParsing {
         int effectIndex = actionStartIndex + 1;
 
         while(!this.nonEmptyConfigFileLines.get(effectIndex).equals(STRING_LOWERCASE_END_ACTION)) {
-            tempEffects.add(addNewEffect(effectIndex));
+            actionEffects.addAll(addNewEffect(effectIndex));
             effectIndex += 1;
         }
 
-        return effectIndex;
+        this.config.addAction(new Action(actionName, actionElement, actionEffects));
+
+        return effectIndex + 1;
     }
 
-    public Effect addNewEffect(int effectStartIndex) {
+    public List<Effect> addNewEffect(int effectStartIndex) {
         String firstWord = this.nonEmptyConfigFileLines.get(effectStartIndex).split(MULTIPLE_SPACES_REGEX)[0];
+        List<Effect> tempEffects = new ArrayList<>();
 
         switch(firstWord) {
             case STRING_LOWERCASE_DAMAGE:
-                return addNewEffectDamage(effectStartIndex);
+                tempEffects.add(addNewEffectDamage(effectStartIndex));
                 break;
             case STRING_INFLICT_STAT_CHANGE:
-                return addNewEffectInflictStatChange(effectStartIndex);
+                tempEffects.add(addNewEffectInflictStatChange(effectStartIndex));
                 break;
             case STRING_PROTECT_STAT:
-                return addNewEffectProtectStat(effectStartIndex);
+                tempEffects.add(addNewEffectProtectStat(effectStartIndex));
                 break;
             case STRING_LOWERCASE_HEAL:
-                return addNewEffectHeal(effectStartIndex);
+                tempEffects.add(addNewEffectHeal(effectStartIndex));
                 break;
             case STRING_LOWERCASE_REPEAT:
                 return addNewEffectRepeat(effectStartIndex);
-                break;
             case STRING_LOWERCASE_CONTINUE:
-                return addNewEffectCOntinue(effectStartIndex);
+                tempEffects.add(addNewEffectContinue(effectStartIndex));
                 break;
             default:
                 break;
         }
+
+        return tempEffects;
 
     }
 
@@ -119,20 +143,17 @@ public class ConfigParsing {
         String valueTypeString = effectContents[2];
         ValueType valueType = ValueType.BASE;
 
-        if (valueTypeString.equals(STRING_LOWERCASE_BASE)) {
-            valueType = ValueType.BASE;
-        } else if (valueTypeString.equals(STRING_LOWERCASE_REL)) {
-            valueType = ValueType.RELATIVE;
-        } else if (valueTypeString.equals(STRING_LOWERCASE_ABS)) {
-            valueType = ValueType.ABSOLUTE;
-        } else {
-            System.out.println("insert error");
+        switch (valueTypeString) {
+            case STRING_LOWERCASE_BASE -> valueType = ValueType.BASE;
+            case STRING_LOWERCASE_REL -> valueType = ValueType.RELATIVE;
+            case STRING_LOWERCASE_ABS -> valueType = ValueType.ABSOLUTE;
+            default -> System.out.println("insert valueType error");
         }
 
         int value = Integer.parseInt(effectContents[3]);
         int hitRate = Integer.parseInt(effectContents[4]);
 
-        return new EffectDamage(BASE_REPEAT_COUNT, targetMonster, valueType, value, hitRate);
+        return new EffectDamage(targetMonster, valueType, value, hitRate);
     }
 
     public Effect addNewEffectInflictStatChange(int effectIndex) {
@@ -142,7 +163,7 @@ public class ConfigParsing {
         int value = Integer.parseInt(effectContents[3]);
         int hitRate = Integer.parseInt(effectContents[4]);
 
-        return new EffectInflictStatChange(BASE_REPEAT_COUNT, targetMonster, stat, value, hitRate);
+        return new EffectInflictStatChange(targetMonster, stat, value, hitRate);
     }
 
     public Effect addNewEffectProtectStat(int effectIndex) {
@@ -151,7 +172,7 @@ public class ConfigParsing {
         int value = Integer.parseInt(effectContents[2]);
         int hitRate = Integer.parseInt(effectContents[3]);
 
-        return new EffectProtectStat(BASE_REPEAT_COUNT, protectTarget, value, hitRate);
+        return new EffectProtectStat(protectTarget, value, hitRate);
     }
 
     public Effect addNewEffectHeal(int effectIndex) {
@@ -173,15 +194,33 @@ public class ConfigParsing {
         int value = Integer.parseInt(effectContents[3]);
         int hitRate = Integer.parseInt(effectContents[4]);
 
-        return new EffectHeal(BASE_REPEAT_COUNT, targetMonster, valueType, value, hitRate);
+        return new EffectHeal(targetMonster, valueType, value, hitRate);
     }
 
-    public Effect addNewEffectRepeat(int effectIndex) {
+    public List<Effect> addNewEffectRepeat(int repeatIndex) {
+        List<Effect> repeatEffects = new ArrayList<>();
+        int effectsIndex = repeatIndex + 1;
+        int repetitionCount = Integer.parseInt(this.nonEmptyConfigFileLines.get(repeatIndex).split(MULTIPLE_SPACES_REGEX)[1]);
 
+        while(!this.nonEmptyConfigFileLines.get(effectsIndex).equals(STRING_LOWERCASE_END_REPEAT)) {
+            List<Effect> newEffects = addNewEffect(effectsIndex);
+            if (newEffects.size() == 1) {
+                repeatEffects.add(newEffects.get(0));
+                effectsIndex += 1;
+            } else if (newEffects.size() > 1) {
+                System.out.println("repeat in repeat not allowed");
+            } else {
+                System.out.println("Empty repeat list not allowed");
+            }
+
+        }
+        return repeatEffects;
     }
 
     public Effect addNewEffectContinue(int effectIndex) {
+        int hitRate = Integer.parseInt(this.nonEmptyConfigFileLines.get(effectIndex).split(MULTIPLE_SPACES_REGEX)[1]);
 
+        return new EffectContinue(hitRate);
     }
 
 

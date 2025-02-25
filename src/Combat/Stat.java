@@ -1,4 +1,4 @@
-package config;
+package Combat;
 
 /**
  * The enum Stat.

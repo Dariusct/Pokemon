@@ -1,4 +1,4 @@
-package config;
+package Combat;
 
 /**
  * This Enum describes the Type of Element each Monster or Effect has in the game.

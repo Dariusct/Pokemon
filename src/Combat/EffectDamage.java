@@ -1,6 +1,4 @@
-package config;
-
-import Combat.CombatMonster;
+package Combat;
 
 public class EffectDamage extends Effect {
 
@@ -8,8 +6,8 @@ public class EffectDamage extends Effect {
     private final int value;
     private final ValueType valueType;
 
-    public EffectDamage(int repetitionCount, TargetMonster targetMonster, ValueType valueType, int value, int hitRate) {
-        super(hitRate, repetitionCount);
+    public EffectDamage(TargetMonster targetMonster, ValueType valueType, int value, int hitRate) {
+        super(hitRate);
         this.targetMonster = targetMonster;
         this.value = value;
         this.valueType = valueType;

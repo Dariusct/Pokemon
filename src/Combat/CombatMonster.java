@@ -1,7 +1,5 @@
 package Combat;
 
-import config.MonsterBaseValues;
-
 public class CombatMonster {
 
     private MonsterBaseValues monsterBaseValues;
