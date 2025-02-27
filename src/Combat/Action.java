@@ -27,7 +27,7 @@ public class Action {
 
         boolean isFirst = true;
         for (Effect effect : effects) {
-            boolean isSuccessful = effect.applyEffect(user, target);
+            boolean isSuccessful = effect.applyEffect(user, target, element);
             if (isFirst && !isSuccessful) {
                 return false;
             }

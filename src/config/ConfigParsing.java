@@ -7,18 +7,23 @@ import Combat.EffectDamage;
 import Combat.EffectHeal;
 import Combat.EffectInflictStatChange;
 import Combat.EffectProtectStat;
+import Combat.EffectStatusCondition;
 import Combat.Element;
-import Combat.Stat;
+import Combat.MonsterBaseValues;
 import Combat.ProtectTarget;
+import Combat.Stat;
+import Combat.StatusCondition;
 import Combat.TargetMonster;
 import Combat.ValueType;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.nio.file.Path;
+import java.util.Map;
 
 
 public class ConfigParsing {
@@ -39,9 +44,11 @@ public class ConfigParsing {
     private static final String STRING_LOWERCASE_ABS = "abs";
     private static final String STRING_LOWERCASE_STATS = "stats";
     private static final String STRING_LOWERCASE_END_REPEAT = "end repeat";
+    private static final String STRING_INFLICT_STATUS_CONDITION = "inflictStatusCondition";
 
     private final List<String> nonEmptyConfigFileLines = new ArrayList<>();
     private final Configuration config = new Configuration();
+    private final Map<String, Action> allActions = new HashMap<>();
 
 
     public void parseNewConfigFile(String configFilePath) throws IOException {
@@ -85,6 +92,24 @@ public class ConfigParsing {
     }
 
     public void addNewMonsterBaseValues(int monsterConfigIndex) {
+        String[] monsterContents = this.nonEmptyConfigFileLines.get(monsterConfigIndex).split(MULTIPLE_SPACES_REGEX);
+        String monsterName = monsterContents[1];
+        Element monsterElement = Element.valueOf(monsterContents[2]);
+        double maxHealth = Double.parseDouble(monsterContents[3]);
+        double baseAttack = Double.parseDouble(monsterContents[4]);
+        double baseDefense = Double.parseDouble(monsterContents[5]);
+        double baseSpeed = Double.parseDouble(monsterContents[6]);
+
+        Map<String, Action> monsterActions = new HashMap<>();
+
+        for (int i = 7; i < monsterContents.length; i++) {
+            if (allActions.containsKey(monsterContents[i])) {
+                monsterActions.put(monsterContents[i], allActions.get(monsterContents[i]));
+            }
+        }
+        MonsterBaseValues newMonsterBaseValues = new MonsterBaseValues(monsterName, monsterElement, maxHealth,
+                baseAttack, baseDefense, baseSpeed, monsterActions);
+        this.config.addMonsterBaseValues(newMonsterBaseValues);
 
     }
 
@@ -102,7 +127,9 @@ public class ConfigParsing {
             effectIndex += 1;
         }
 
-        this.config.addAction(new Action(actionName, actionElement, actionEffects));
+        Action newAction = new Action(actionName, actionElement, actionEffects);
+        this.allActions.put(newAction.getName(), newAction);
+        this.config.addAction(newAction);
 
         return effectIndex + 1;
     }
@@ -129,6 +156,8 @@ public class ConfigParsing {
             case STRING_LOWERCASE_CONTINUE:
                 tempEffects.add(addNewEffectContinue(effectStartIndex));
                 break;
+            case STRING_INFLICT_STATUS_CONDITION:
+                tempEffects.add(addNewEffectStatusCondition(effectStartIndex));
             default:
                 break;
         }
@@ -141,7 +170,7 @@ public class ConfigParsing {
         String[] effectContents = this.nonEmptyConfigFileLines.get(effectIndex).split(MULTIPLE_SPACES_REGEX);
         TargetMonster targetMonster = effectContents[1].equals(STRING_LOWERCASE_USER) ? TargetMonster.USER : TargetMonster.TARGET;
         String valueTypeString = effectContents[2];
-        ValueType valueType = ValueType.BASE;
+        ValueType valueType = null;
 
         switch (valueTypeString) {
             case STRING_LOWERCASE_BASE -> valueType = ValueType.BASE;
@@ -179,16 +208,13 @@ public class ConfigParsing {
         String[] effectContents = this.nonEmptyConfigFileLines.get(effectIndex).split(MULTIPLE_SPACES_REGEX);
         TargetMonster targetMonster = effectContents[1].equals(STRING_LOWERCASE_USER) ? TargetMonster.USER : TargetMonster.TARGET;
         String valueTypeString = effectContents[2];
-        ValueType valueType = ValueType.BASE;
+        ValueType valueType = null;
 
-        if (valueTypeString.equals(STRING_LOWERCASE_BASE)) {
-            valueType = ValueType.BASE;
-        } else if (valueTypeString.equals(STRING_LOWERCASE_REL)) {
-            valueType = ValueType.RELATIVE;
-        } else if (valueTypeString.equals(STRING_LOWERCASE_ABS)) {
-            valueType = ValueType.ABSOLUTE;
-        } else {
-            System.out.println("insert error");
+        switch (valueTypeString) {
+            case STRING_LOWERCASE_BASE -> valueType = ValueType.BASE;
+            case STRING_LOWERCASE_REL -> valueType = ValueType.RELATIVE;
+            case STRING_LOWERCASE_ABS -> valueType = ValueType.ABSOLUTE;
+            default -> System.out.println("insert value type error");
         }
 
         int value = Integer.parseInt(effectContents[3]);
@@ -202,7 +228,7 @@ public class ConfigParsing {
         int effectsIndex = repeatIndex + 1;
         int repetitionCount = Integer.parseInt(this.nonEmptyConfigFileLines.get(repeatIndex).split(MULTIPLE_SPACES_REGEX)[1]);
 
-        while(!this.nonEmptyConfigFileLines.get(effectsIndex).equals(STRING_LOWERCASE_END_REPEAT)) {
+        while (!this.nonEmptyConfigFileLines.get(effectsIndex).equals(STRING_LOWERCASE_END_REPEAT)) {
             List<Effect> newEffects = addNewEffect(effectsIndex);
             if (newEffects.size() == 1) {
                 repeatEffects.add(newEffects.get(0));
@@ -221,6 +247,15 @@ public class ConfigParsing {
         int hitRate = Integer.parseInt(this.nonEmptyConfigFileLines.get(effectIndex).split(MULTIPLE_SPACES_REGEX)[1]);
 
         return new EffectContinue(hitRate);
+    }
+
+    public Effect addNewEffectStatusCondition(int effectIndex) {
+        String[] effectContents = this.nonEmptyConfigFileLines.get(effectIndex).split(MULTIPLE_SPACES_REGEX);
+        TargetMonster targetMonster = effectContents[1].equals(STRING_LOWERCASE_USER) ? TargetMonster.USER : TargetMonster.TARGET;
+        StatusCondition statusCondition = StatusCondition.valueOf(effectContents[2]);
+        int hitRate = Integer.parseInt(effectContents[3]);
+
+        return new EffectStatusCondition(targetMonster, statusCondition, hitRate);
     }
 
 
