@@ -6,7 +6,7 @@ import Combat.EffectContinue;
 import Combat.EffectDamage;
 import Combat.EffectHeal;
 import Combat.EffectInflictStatChange;
-import Combat.EffectProtectStat;
+import Combat.EffectProtect;
 import Combat.EffectStatusCondition;
 import Combat.Element;
 import Combat.MonsterBaseValues;
@@ -201,7 +201,7 @@ public class ConfigParsing {
         int value = Integer.parseInt(effectContents[2]);
         int hitRate = Integer.parseInt(effectContents[3]);
 
-        return new EffectProtectStat(protectTarget, value, hitRate);
+        return new EffectProtect(protectTarget, value, hitRate);
     }
 
     public Effect addNewEffectHeal(int effectIndex) {

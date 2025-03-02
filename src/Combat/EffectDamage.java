@@ -21,40 +21,35 @@ public class EffectDamage extends Effect {
 
         switch (this.targetMonster) {
             case USER:
-                return applyEffectToUser(user);
-                break;
+                return applyEffectToUser(user, actionElement);
             case TARGET:
                 switch (valueType) {
                     case BASE:
                         return target.takeBaseDamage(value, actionElement, userElement, userAtk, userSpd, getHitRate());
-                        break;
                     case ABSOLUTE:
                         return target.takeAbsoluteDamage(value, getHitRate());
-                        break;
                     case RELATIVE:
                         return target.takeRelativeDamage(value, getHitRate());
-                        break;
                     default:
                         break;
                 }
             default:
                 break;
         }
+        return false;
     }
 
-    private boolean applyEffectToUser(CombatMonster user) {
-        switch (valueType) {
-            case BASE:
-                return true;
-                break;
-            case ABSOLUTE:
-                return true;
-                break;
-            case RELATIVE:
-                return true;
-                break;
-            default:
-        }
+    private boolean applyEffectToUser(CombatMonster user, Element actionElement) {
+        Element userElement = user.getElement();
+        double userAtk = user.getAtk();
+        double userSpd = user.getSpd();
+
+        return switch (valueType) {
+            case BASE -> user.takeBaseDamage(value, actionElement, userElement, userAtk, userSpd, getHitRate());
+            case ABSOLUTE -> user.takeAbsoluteDamage(value, getHitRate());
+            case RELATIVE -> user.takeRelativeDamage(value, getHitRate());
+            default -> false;
+        };
     }
 
 

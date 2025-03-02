@@ -6,7 +6,8 @@ public class EffectContinue extends Effect {
         super(hitRate);
     }
 
-    public boolean applyEffect() {
-
+    @Override
+    public boolean applyEffect(CombatMonster user, CombatMonster target, Element actionElement) {
+        return user.continueAction(getHitRate());
     }
 }

@@ -14,7 +14,15 @@ public class EffectInflictStatChange extends Effect {
     }
 
     @Override
-    public boolean applyEffect(CombatMonster user, CombatMonster target) {
-
+    public boolean applyEffect(CombatMonster user, CombatMonster target, Element acionElement) {
+        switch (this.targetMonster) {
+            case USER:
+                return user.inflictStatChange(stat, value, getHitRate());
+            case TARGET:
+                return target.inflictStatChange(stat, value, getHitRate());
+            default:
+                return false;
+        }
     }
+
 }

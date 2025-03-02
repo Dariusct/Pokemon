@@ -7,7 +7,7 @@ public class Effect {
     public Effect(int hitRate) {
         this.hitRate = hitRate;
     }
-    public boolean applyEffect(CombatMonster user, CombatMonster target, Element userElement) {
+    public boolean applyEffect(CombatMonster user, CombatMonster target, Element actionElement) {
         System.out.println("Wrong parameters given to Effect");
         return false;
     }

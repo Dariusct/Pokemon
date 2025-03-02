@@ -14,6 +14,9 @@ public class CombatMonster {
     private double spdChange;
     private double aglChange;
     private double prcChange;
+    private boolean isStatProtectActive = false;
+    private boolean isHealthProtectActive = false;
+    private int numOfProtectRounds = 0;
 
 
     public Element getElement() {
@@ -62,13 +65,15 @@ public class CombatMonster {
     public boolean takeBaseDamage(int baseValue, Element actionElement, Element userElement, double userAtk, double userSpd, int actionHitRate) {
 
         if (randomNumberGenerator.decideHitInterval100(actionHitRate)) {
-            double actionVsTargetElementFactor = calcActionVsTargetElementFactor(actionElement, this.getElement());
-            double conditionFactor = userAtk / this.getDef();
-            double criticalHitFactor = calcCriticalHitFactor(userSpd);
-            double actionVsUserElementFactor = actionElement == userElement ? 1.5 : 1;
-            double damageTaken = Math.ceil(actionVsTargetElementFactor * conditionFactor * criticalHitFactor * actionVsUserElementFactor);
+            if (!checkHealthProtect() || baseValue <= 0) {
+                double actionVsTargetElementFactor = calcActionVsTargetElementFactor(actionElement, this.getElement());
+                double conditionFactor = userAtk / this.getDef();
+                double criticalHitFactor = calcCriticalHitFactor(userSpd);
+                double actionVsUserElementFactor = actionElement == userElement ? 1.5 : 1;
+                double damageTaken = Math.ceil(actionVsTargetElementFactor * conditionFactor * criticalHitFactor * actionVsUserElementFactor);
 
-            this.maxHealthChange -= damageTaken;
+                this.maxHealthChange -= damageTaken;
+            }
             return true;
         } else {
             return false;
@@ -78,7 +83,9 @@ public class CombatMonster {
 
     public boolean takeAbsoluteDamage(int value, int actionHitRate) {
         if (randomNumberGenerator.decideHitInterval100(actionHitRate)) {
-            this.maxHealthChange -= value;
+            if (!checkHealthProtect() || value <= 0) {
+                this.maxHealthChange -= value;
+            }
             return true;
         } else {
             return false;
@@ -88,11 +95,104 @@ public class CombatMonster {
 
     public boolean takeRelativeDamage(int value, int actionHitRate) {
         if (randomNumberGenerator.decideHitInterval100(actionHitRate)) {
-            this.maxHealthChange -= Math.ceil((value * 0.01) * this.monsterBaseValues.getMaxHealth());
+            if (!checkHealthProtect() || value <= 0) {
+                this.maxHealthChange -= Math.ceil((value * 0.01) * this.monsterBaseValues.getMaxHealth());
+            }
             return true;
         } else {
             return false;
         }
     }
+
+    public asdadada
+
+    public boolean inflictStatChange(Stat stat, int value, int actionHitRate) {
+        int amountToChange = value;
+        if (value < -5) {
+            amountToChange = -5;
+        } else if (value > 5) {
+            amountToChange = 5;
+        }
+
+        if (randomNumberGenerator.decideHitInterval100(actionHitRate)) {
+            if (!checkStatProtect()) {
+                switch (stat) {
+                    case ATK:
+                        this.atkChange += amountToChange;
+                        break;
+                    case DEF:
+                        this.defChange += amountToChange;
+                        break;
+                    case SPD:
+                        this.spdChange += amountToChange;
+                        break;
+                    case PRC:
+                        this.prcChange += amountToChange;
+                        break;
+                    case AGL:
+                        this.aglChange += amountToChange;
+                        break;
+                    default:
+                        break;
+                }
+            }
+            return true;
+
+        } else {
+            return false;
+        }
+    }
+
+    public boolean protectHealth(int numOfRounds, int actionHitRate) {
+        if (randomNumberGenerator.decideHitInterval100(actionHitRate)) {
+            this.isHealthProtectActive = true;
+            this.numOfProtectRounds = numOfRounds;
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    private boolean checkHealthProtect() {
+        if (this.isHealthProtectActive && this.numOfProtectRounds > 0) {
+            this.numOfProtectRounds--;
+            if (this.numOfProtectRounds <= 0) {
+                this.isHealthProtectActive = false;
+            }
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    public boolean protectStats(int numOfRounds, int actionHitRate) {
+        if (randomNumberGenerator.decideHitInterval100(actionHitRate)) {
+            this.isStatProtectActive = true;
+            this.numOfProtectRounds = numOfRounds;
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    private boolean checkStatProtect() {
+        if (this.isStatProtectActive && this.numOfProtectRounds > 0) {
+            this.numOfProtectRounds--;
+            if (this.numOfProtectRounds <= 0) {
+                this.isStatProtectActive = false;
+            }
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    public boolean continueAction(int actionHitRate) {
+        return randomNumberGenerator.decideHitInterval100(actionHitRate);
+    }
+
+
+
+
 
 }

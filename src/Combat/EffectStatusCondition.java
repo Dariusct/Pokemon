@@ -12,7 +12,7 @@ public class EffectStatusCondition extends Effect {
     }
 
     @Override
-    public boolean applyEffect(CombatMonster user, CombatMonster target) {
+    public boolean applyEffect(CombatMonster user, CombatMonster target, Element actionElement) {
 
     }
 }
