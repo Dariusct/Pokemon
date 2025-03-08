@@ -1,4 +1,4 @@
-package Combat;
+package combat;
 
 public class EffectHeal extends Effect {
 

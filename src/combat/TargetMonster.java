@@ -1,4 +1,4 @@
-package Combat;
+package combat;
 
 public enum TargetMonster {
     USER,

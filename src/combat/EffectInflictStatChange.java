@@ -1,4 +1,4 @@
-package Combat;
+package combat;
 
 public class EffectInflictStatChange extends Effect {
 
@@ -15,14 +15,11 @@ public class EffectInflictStatChange extends Effect {
 
     @Override
     public boolean applyEffect(CombatMonster user, CombatMonster target, Element acionElement) {
-        switch (this.targetMonster) {
-            case USER:
-                return user.inflictStatChange(stat, value, getHitRate());
-            case TARGET:
-                return target.inflictStatChange(stat, value, getHitRate());
-            default:
-                return false;
-        }
+        return switch (this.targetMonster) {
+            case USER -> user.inflictStatChange(stat, value, getHitRate());
+            case TARGET -> target.inflictStatChange(stat, value, getHitRate());
+            default -> false;
+        };
     }
 
 }

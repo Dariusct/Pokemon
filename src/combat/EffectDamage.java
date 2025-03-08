@@ -1,4 +1,4 @@
-package Combat;
+package combat;
 
 public class EffectDamage extends Effect {
 
@@ -16,8 +16,8 @@ public class EffectDamage extends Effect {
     @Override
     public boolean applyEffect(CombatMonster user, CombatMonster target, Element actionElement) {
         Element userElement = user.getElement();
-        double userAtk = user.getAtk();
-        double userSpd = user.getSpd();
+        double userAtk = user.getEffectiveAtk();
+        double userSpd = user.getEffectiveSpd();
 
         switch (this.targetMonster) {
             case USER:
@@ -41,8 +41,8 @@ public class EffectDamage extends Effect {
 
     private boolean applyEffectToUser(CombatMonster user, Element actionElement) {
         Element userElement = user.getElement();
-        double userAtk = user.getAtk();
-        double userSpd = user.getSpd();
+        double userAtk = user.getEffectiveAtk();
+        double userSpd = user.getEffectiveSpd();
 
         return switch (valueType) {
             case BASE -> user.takeBaseDamage(value, actionElement, userElement, userAtk, userSpd, getHitRate());

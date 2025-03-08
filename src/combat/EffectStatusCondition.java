@@ -1,4 +1,4 @@
-package Combat;
+package combat;
 
 public class EffectStatusCondition extends Effect {
 
@@ -13,7 +13,11 @@ public class EffectStatusCondition extends Effect {
 
     @Override
     public boolean applyEffect(CombatMonster user, CombatMonster target, Element actionElement) {
-
+        return switch (this.targetMonster) {
+            case TARGET -> target.applyStatusCondition(getHitRate(), statusCondition);
+            case USER -> user.applyStatusCondition(getHitRate(), statusCondition);
+        };
     }
+
 }
 

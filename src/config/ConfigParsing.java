@@ -1,20 +1,20 @@
 package config;
 
-import Combat.Action;
-import Combat.Effect;
-import Combat.EffectContinue;
-import Combat.EffectDamage;
-import Combat.EffectHeal;
-import Combat.EffectInflictStatChange;
-import Combat.EffectProtect;
-import Combat.EffectStatusCondition;
-import Combat.Element;
-import Combat.MonsterBaseValues;
-import Combat.ProtectTarget;
-import Combat.Stat;
-import Combat.StatusCondition;
-import Combat.TargetMonster;
-import Combat.ValueType;
+import combat.Action;
+import combat.Effect;
+import combat.EffectContinue;
+import combat.EffectDamage;
+import combat.EffectHeal;
+import combat.EffectInflictStatChange;
+import combat.EffectProtect;
+import combat.EffectStatusCondition;
+import combat.Element;
+import combat.MonsterBaseValues;
+import combat.ProtectTarget;
+import combat.Stat;
+import combat.StatusCondition;
+import combat.TargetMonster;
+import combat.ValueType;
 
 import java.io.IOException;
 import java.util.ArrayList;

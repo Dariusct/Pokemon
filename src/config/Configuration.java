@@ -1,11 +1,9 @@
 package config;
 
-import Combat.Action;
-import Combat.MonsterBaseValues;
+import combat.Action;
+import combat.MonsterBaseValues;
 
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 public class Configuration {

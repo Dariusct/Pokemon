@@ -1,4 +1,4 @@
-package Combat;
+package combat;
 
 import java.util.Map;
 
@@ -54,6 +54,10 @@ public class MonsterBaseValues {
 
     public void addAction(Action action) {
         this.actions.put(action.getName(), action);
+    }
+
+    public Action getAction(String name) {
+        return this.actions.get(name);
     }
 
 }
