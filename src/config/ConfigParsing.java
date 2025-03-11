@@ -58,14 +58,12 @@ public class ConfigParsing {
         try {
             List<String> configFileLines = Files.readAllLines(filePath);
 
-            for (int i = 0; i < configFileLines.size(); i++) {
-                String configFileLine = configFileLines.get(i).trim();
+            for (String fileLine : configFileLines) {
+                String configFileLine = fileLine.trim();
                 if (!configFileLine.isEmpty()) {
                     this.nonEmptyConfigFileLines.add(configFileLine);
                 }
             }
-
-
         } catch (IOException e) {
             System.out.println("Error reading config file");
         }
@@ -77,7 +75,7 @@ public class ConfigParsing {
         boolean configurationIsDone = false;
         int currentIndex = 0;
 
-        while(!configurationIsDone) {
+        while (!configurationIsDone) {
             if (this.nonEmptyConfigFileLines.get(currentIndex).split(MULTIPLE_SPACES_REGEX)[0].equals(STRING_ACTION_DECLARATION)) {
                 currentIndex = addNewAction(currentIndex);
             } else if (this.nonEmptyConfigFileLines.get(currentIndex).split(MULTIPLE_SPACES_REGEX)[0].equals(STRING_MONSTER_DECLARATION)) {
@@ -85,10 +83,14 @@ public class ConfigParsing {
                 currentIndex += 1;
             }
 
-            if(currentIndex >= this.nonEmptyConfigFileLines.size()) {
+            if (currentIndex >= this.nonEmptyConfigFileLines.size()) {
                 configurationIsDone = true;
             }
         }
+    }
+
+    public Configuration getConfig() {
+        return this.config;
     }
 
     public void addNewMonsterBaseValues(int monsterConfigIndex) {

@@ -1,5 +1,7 @@
 package commandhandler;
 
+import java.io.IOException;
+
 /**
  * The type Command.
  * @author uvzab
@@ -10,5 +12,5 @@ public abstract class Command {
      *
      * @param args the args needed for certain commands.
      */
-    abstract void execute(String[] args);
+    public abstract boolean execute(String[] args) throws IOException;
 }

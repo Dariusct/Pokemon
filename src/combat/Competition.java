@@ -17,13 +17,12 @@ public class Competition {
     private boolean isRunning;
 
     public Competition(List<MonsterBaseValues> fightingMonsters) {
-
-        this.isRunning = false;
-        initializeMonsterNames(fightingMonsters);
-        initializeCommands();
+        this.isRunning = true;
+        initializeActiveMonsters(fightingMonsters);
+        System.out.println("The " + activeMonsters.size() + " monsters enter the competition!");
     }
 
-    private void initializeMonsterNames(List<MonsterBaseValues> fightingMonsters) {
+    private void initializeActiveMonsters(List<MonsterBaseValues> fightingMonsters) {
         Map<String, Integer> nameCount = new HashMap<>();
         for (MonsterBaseValues monster : fightingMonsters) {
             String monsterName = monster.getName();
@@ -43,9 +42,7 @@ public class Competition {
     }
 
 
-    private void initializeCommands() {
-        commands.put("quit", new CommandQuit(this));
-    }
+
 
 
     public void startCompetition() {
@@ -61,10 +58,7 @@ public class Competition {
     }
 
     public void phase1() {
-        Scanner scanner = new Scanner(System.in);
-        String input = scanner.nextLine();
-        String[] tokens = input.split(" ");
-        Command command = commands.get
+
     }
 
     public boolean phase2() {
